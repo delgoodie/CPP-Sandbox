@@ -50,12 +50,11 @@ void print2dIntegerArray(int **array, int size)
 int **generateMap(int size)
 {
     int **map = 0;
-    *map = new int[size];
+    map = new int *[size];
     for (int i = 0; i < size; i++)
     {
         map[i] = new int[2];
-        std::cout << sizeof(map) / sizeof(map[i]);
-        for (int j = 0; j < sizeof(map) / sizeof(map[i]); j++)
+        for (int j = 0; j < 2; j++)
         {
             map[i][j] = rand();
         }
