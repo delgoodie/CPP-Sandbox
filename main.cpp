@@ -51,13 +51,18 @@ int **generateMap(int size)
 {
     int **map = 0;
     map = new int *[size];
-    for (int i = 0; i < size; i++)
+
+    map[0][0] = (int)(((double)rand()/(double)RAND_MAX)*11);
+    map[0][1] = (int)(((double)rand()/(double)RAND_MAX)*11);
+
+    for (int i = 1; i < size; i++)
     {
         map[i] = new int[2];
         for (int j = 0; j < 2; j++)
         {
-            map[i][j] = rand();
-        }
+            bool y;
+            
+        } 
     }
 
     return map;
