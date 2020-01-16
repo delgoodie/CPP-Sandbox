@@ -1,83 +1,32 @@
 #include <iostream>
 #include <cstdio>
+#include <math.h>
 
-const int mapHeight = 5;
-const int mapWidth = 5;
+const int MAP_HEIGHT = 5;
+const int MAP_WIDTH = 5;
 
-void setup(char map[mapHeight][mapWidth], bool gameOver)
+void setup()
 {
 }
 
 class Territory
 {
 public:
-    bool occupies(int x, int y);
+    int coords[2];
+    enum Status = {NULL = 0, HEALTHY, INFECTED, DEAD}; // all map coords are territories but can be null spaces or land units
+    Status status = Status.NULL;
+    Territory();
 
 private:
-    const int num = rand();
-    int map[10][2];
-
-    int **generateMap(int size)
-    {
-        int **map = 0;
-        *map = new int[size];
-        for (int i = 0; i < size; i++)
-        {
-            map[i] = new int[2];
-            std::cout << sizeof(map) / sizeof(map[i]);
-            for (int j = 0; j < sizeof(map) / sizeof(map[i]); j++)
-            {
-                map[i][j] = rand();
-            }
-        }
-
-        return map;
-    }
 };
 
-void print2dIntegerArray(int **array, int size)
+Territory::Territory()
 {
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size / sizeof(array[i]); j++)
-        {
-            std::cout << array[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
 }
 
-int **generateMap(int size)
+void printMapconst()
 {
-    int **map = 0;
-    map = new int *[size];
-
-    map[0][0] = (int)(((double)rand()/(double)RAND_MAX)*11);
-    map[0][1] = (int)(((double)rand()/(double)RAND_MAX)*11);
-
-    for (int i = 1; i < size; i++)
-    {
-        map[i] = new int[2];
-        for (int j = 0; j < 2; j++)
-        {
-            bool y;
-            
-        } 
-    }
-
-    return map;
-}
-
-void printMap(const char map[mapHeight][mapWidth])
-{
-    for (int i = 0; i < mapHeight; i++)
-    {
-        for (int j = 0; j < mapWidth; j++)
-        {
-            std::cout << map[i][j];
-        }
-        std::cout << std::endl;
-    }
+    //re-written for territory array
 }
 
 void loop()
@@ -86,15 +35,6 @@ void loop()
 
 int main()
 {
-    char map[mapHeight][mapWidth];
-    bool gameOver;
-
-    print2dIntegerArray(generateMap(4), 4);
-
-    setup(map, gameOver);
-
-    printMap(map);
-
     while (!gameOver)
     {
         loop();
