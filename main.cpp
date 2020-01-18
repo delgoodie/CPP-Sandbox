@@ -3,10 +3,16 @@
 #include <math.h>
 #include <string>
 
-const int MAP_HEIGHT = 10;
-const int MAP_WIDTH = 20;
-const int MAP_TERRITORY_SIZE = 40;
-enum Territory
+const int MAP_HEIGHT = 10;            //The height of the map -- map.length
+const int MAP_WIDTH = 20;             //The width of the map -- map[0].length
+const int MAP_TERRITORY_SIZE = 40;    //The max number of healthy spaces that can randomly spawn
+const int CURE_DIFFICULTY = 100;      //Higher CURE_DIFFICULTY decreases the chances that HEALTHY Territories will cure INFECTED Territories
+const int INFECTION_DIFFICULTY = 100; //Higher INFECTION_DIFFICULTY decreases the chances that INFECTED Territories will infect HEALTHY Territories
+const int REVIVAL_DIFFICULTY = 100;   //Higher REVIVAL_DIFFICULTY decreases the chances that a DEAD or EMPTY Territory will become a HEALTHY Territory
+const int INITIAL_CURE = 0;           // The inital value of the cure
+const int INITIAL_INFECTION = 5;      // The initial value of the infection
+
+enum Territory //Each space of the map is a Territory enum representing its status
 {
     EMPTY,
     HEALTHY,
@@ -14,26 +20,30 @@ enum Territory
     DEAD
 };
 
-void printMap(Territory **);
-int randInt(int);
-void setup(Territory **);
-bool loop();
+void printMap(Territory **, int, int);      //prints the map to the console in battleship format -- rows alphabetically assigned, columbs numerically assigned
+int randInt(int);                           //generates a random integer between zero and specified argument
+void setup(Territory **);                   //sets up map and prompts user for infection starting point
+bool loop(Territory **, int *, int *);      //main game loop, calls all update funtions and returns true on game end
+void updateMap(Territory **, int *, int *); //determines game logic for each territory
 
 int randInt(int max)
 {
     return (int)(((double)rand() / (double)RAND_MAX) * max);
 }
 
-void printMap(Territory **map)
+void printMap(Territory **map, int cure, int infection)
 {
     std::cout << "MAP:" << std::endl
-              << "  ";
+              << "   ";
     for (int i = 0; i < MAP_WIDTH; i++)
         std::cout << (char)(i + 65) << " ";
     std::cout << std::endl;
     for (int i = 0; i < MAP_HEIGHT; i++)
     {
-        std::cout << i << " ";
+        if (i < 9)
+            std::cout << i + 1 << "  ";
+        else
+            std::cout << i + 1 << " ";
         for (int j = 0; j < MAP_WIDTH; j++)
         {
             switch (*(*(map + i) + j))
@@ -53,6 +63,7 @@ void printMap(Territory **map)
         }
         std::cout << std::endl;
     }
+    std::cout << "Cure: " << cure << "\tInfection: " << infection << std::endl;
 }
 
 void setup(Territory **map)
@@ -98,31 +109,39 @@ void setup(Territory **map)
             break;
     }
 
-    printMap(map);
+    printMap(map, 0, 0);
     bool validStart = false;
     while (!validStart)
     {
-        std::cout << "Enter the starting coordinates: [A-" << (char)(MAP_WIDTH + 65) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
         char ret[5];
-        std::cin >> ret;
-        int x = ret[0];
+        int y;
+        int x;
+
+        std::cout << "Enter the starting coordinates: [A-" << (char)(MAP_WIDTH + 64) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
+        std::cin >> ret >> y;
+
+        x = ret[0];
         if (x >= 65 && x <= 90)
-            x -= 67;
+            x -= 65;
         else if (x >= 97 && x <= 122)
             x -= 97;
         else
         {
-            std::cout << "Invalid X input! Must be [A -" << (char)(MAP_WIDTH + 65) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
+            std::cout << "Invalid X input! Must be [A-" << (char)(MAP_WIDTH + 64) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
         }
-        std::cout << x << std::endl;
-        int y = ret[3] - 92;
-        std::cout << y << std::endl;
+        y -= 1;
+        if (y < 0 || y > 100)
+        {
+            std::cout << "Invalid Y input! Must be [A-" << (char)(MAP_WIDTH + 64) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
+            continue;
+        }
+
         if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT)
         {
             if (*(*(map + y) + x) == HEALTHY)
             {
-                std::cout << "The infection begins!!!" << std::endl;
                 *(*(map + y) + x) = INFECTED;
+                std::cout << "The infection begins!!!" << std::endl;
                 validStart = true;
             }
             else
@@ -132,21 +151,90 @@ void setup(Territory **map)
         }
         else
         {
-            std::cout << "Invalid input! Must be [A -" << (char)(MAP_WIDTH + 65) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
+            std::cout << "Invalid input! Must be [A-" << (char)(MAP_WIDTH + 64) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
         }
     }
-    printMap(map);
 }
 
-bool loop()
+void updateMap(Territory **map, int *cure, int *infection)
 {
-    return true;
+    for (int i = 0; i < MAP_HEIGHT; i++)
+    {
+        for (int j = 0; j < MAP_WIDTH; j++)
+        {
+            switch (*(*(map + i) + j))
+            {
+            case EMPTY: //EMPTY Territories have small chance to spawn into HEALTHY Territories
+                if (randInt(REVIVAL_DIFFICULTY) == 0)
+                    *(*(map + i) + j) = HEALTHY;
+                break;
+            case HEALTHY: //HEALTHY Territories have chance to cure INFECTED Territories directly above, below, right, or left
+                if (i != 0 && *(*(map + i - 1) + j) == INFECTED && randInt(CURE_DIFFICULTY) <= *cure)
+                {
+                    *(*(map + i - 1) + j) = HEALTHY;
+                    *cure++;
+                }
+                if (i != MAP_HEIGHT - 1 && *(*(map + i + 1) + j) == INFECTED && randInt(CURE_DIFFICULTY) <= *cure)
+                {
+                    *(*(map + i + 1) + j) = HEALTHY;
+                    *cure++;
+                }
+                if (j != 0 && *(*(map + i) + j - 1) == INFECTED && randInt(CURE_DIFFICULTY) <= *cure)
+                {
+                    *(*(map + i) + j - 1) = HEALTHY;
+                    *cure++;
+                }
+                if (j != MAP_WIDTH - 1 && *(*(map + i) + j + 1) == INFECTED && randInt(CURE_DIFFICULTY) <= *cure)
+                {
+                    *(*(map + i) + j + 1) = HEALTHY;
+                    *cure++;
+                }
+                break;
+            case INFECTED: //INFECTED Territories have chance to infect HEALTHY Territories directly above, below, right, or left
+                if (i != 0 && *(*(map + i - 1) + j) == HEALTHY && randInt(INFECTION_DIFFICULTY) <= *infection)
+                {
+                    *(*(map + i - 1) + j) = INFECTED;
+                    *infection++;
+                }
+                if (i != MAP_HEIGHT - 1 && *(*(map + i + 1) + j) == HEALTHY && randInt(INFECTION_DIFFICULTY) <= *infection)
+                {
+                    *(*(map + i + 1) + j) = INFECTED;
+                    *infection++;
+                }
+                if (j != 0 && *(*(map + i) + j - 1) == HEALTHY && randInt(INFECTION_DIFFICULTY) <= *infection)
+                {
+                    *(*(map + i) + j - 1) = INFECTED;
+                    *infection++;
+                }
+                if (j != MAP_WIDTH - 1 && *(*(map + i) + j + 1) == HEALTHY && randInt(INFECTION_DIFFICULTY) <= *infection)
+                {
+                    *(*(map + i) + j + 1) = INFECTED;
+                    *infection++;
+                }
+                break;
+            case DEAD: //DEAD Territories have small chance to come back as HEALTHY Territories
+                if (randInt(REVIVAL_DIFFICULTY) == 0)
+                    *(*(map + i) + j) = HEALTHY;
+                break;
+            }
+        }
+    }
+}
+
+bool loop(Territory **map, int *cure, int *infection)
+{
+    updateMap(map, cure, infection);
+    printMap(map, *cure, *infection);
+    std::cin.ignore();
+    return false;
 }
 
 int main()
 {
     bool gameOver = false;
     Territory **map = new Territory *[MAP_HEIGHT];
+    int cure = INITIAL_CURE;
+    int infection = INITIAL_INFECTION;
     for (int i = 0; i < MAP_HEIGHT; i++)
     {
         map[i] = new Territory[MAP_WIDTH];
@@ -154,7 +242,7 @@ int main()
     setup(map);
     while (!gameOver)
     {
-        if (loop())
+        if (loop(map, &cure, &infection))
             gameOver = true;
     }
     for (int i = 0; i < MAP_HEIGHT; i++)
