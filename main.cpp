@@ -66,8 +66,41 @@ void printMap(Territory **map, int cure, int infection)
     std::cout << "Cure: " << cure << "\tInfection: " << infection << std::endl;
 }
 
+int endCheck(Territory **map)
+{ // -1 = LOSS, 1 = WIN, 0 = NO END
+    bool dead = false;
+    bool healthy = false;
+    bool infected = false;
+    for (int i = 0; i < MAP_HEIGHT; i++)
+    {
+        for (int j = 0; j < MAP_WIDTH; j++)
+        {
+            if (healthy && infected)
+                return 0;
+            else if (*(*(map + i) + j) == DEAD)
+                dead = true;
+            else if (*(*(map + i) + j) == INFECTED)
+                infected = true;
+            else if (*(*(map + i) + j) == HEALTHY)
+                healthy = true;
+        }
+    }
+    if (!infected && healthy)
+        return -1;
+    else if (dead && !infected && !healthy)
+        return 1;
+    else
+        return 0;
+}
+
 void setup(Territory **map)
 {
+    std::cout << std::endl;
+    std::cout << "\t|    |\\    |    +------    +------    +-------    -----+-----    |      ====      |\\    |" << std::endl;
+    std::cout << "\t|    | \\   |    |          |          |                |         |    //    \\\\    | \\   |" << std::endl;
+    std::cout << "\t|    |  \\  |    +----      +----      |                |         |   ||      ||   |  \\  |" << std::endl;
+    std::cout << "\t|    |   \\ |    |          |          |                |         |    \\\\    //    |   \\ |" << std::endl;
+    std::cout << "\t|    |    \\|    |          +------    +-------         |         |      ====      |    \\|" << std::endl;
     int startX = randInt(MAP_WIDTH);
     int startY = randInt(MAP_HEIGHT);
     int numMoves = randInt(MAP_TERRITORY_SIZE) + 50;
