@@ -99,16 +99,41 @@ void setup(Territory **map)
     }
 
     printMap(map);
-    std::cout << "Enter the starting coordinates: [A-" << (char)(MAP_WIDTH + 65) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
-    char ret[5];
-    std::cin >> ret;
-    int x;
-    int y;
-    if (ret[0] - 65 > -1 && ret[0] - 65 < MAP_WIDTH && ret[3] - 48 > -1 && ret[3] - 48 < MAP_HEIGHT)
+    bool validStart = false;
+    while (!validStart)
     {
-        x = (ret[0] - 65);
-        y = (ret[3] - 48);
-        *(*(map + y) + x) = INFECTED;
+        std::cout << "Enter the starting coordinates: [A-" << (char)(MAP_WIDTH + 65) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
+        char ret[5];
+        std::cin >> ret;
+        int x = ret[0];
+        if (x >= 65 && x <= 90)
+            x -= 67;
+        else if (x >= 97 && x <= 122)
+            x -= 97;
+        else
+        {
+            std::cout << "Invalid X input! Must be [A -" << (char)(MAP_WIDTH + 65) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
+        }
+        std::cout << x << std::endl;
+        int y = ret[3] - 92;
+        std::cout << y << std::endl;
+        if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT)
+        {
+            if (*(*(map + y) + x) == HEALTHY)
+            {
+                std::cout << "The infection begins!!!" << std::endl;
+                *(*(map + y) + x) = INFECTED;
+                validStart = true;
+            }
+            else
+            {
+                std::cout << "You chose an empty space! Please choose a healthy space!" << std::endl;
+            }
+        }
+        else
+        {
+            std::cout << "Invalid input! Must be [A -" << (char)(MAP_WIDTH + 65) << ", 0-" << MAP_HEIGHT << "]" << std::endl;
+        }
     }
     printMap(map);
 }
