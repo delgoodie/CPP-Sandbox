@@ -1,0 +1,62 @@
+Soccer Evolution Simulator with Neural Network:
+
+All players have speed, strength, ball control, shot, and pass traits
+
+Plyers evolve and bad players are killed off
+
+Success is a float grade average boosted by successful passing, shooting, dribbling, stealing, and blocking
+
+Neural Network manipulates player to make run time decisions in game
+
+Networks Levels:
+
+hasBall                           Intermediate Levels                   PassUp
+
+teamHasBall                       Intermediate Levels                   PassLeft
+
+opponentHasBall                   Intermediate Levels                   PassRight
+
+ballQ1                            Intermediate Levels                   PassDown
+
+ballQ2                            Intermediate Levels                   ShootUp
+
+ballQ3                            Intermediate Levels                   ShootLeft
+
+ballQ4                            Intermediate Levels                   ShootRight
+
+opponentQ1                        Intermediate Levels                   ShootDown
+
+opponentQ2                        Intermediate Levels                   MoveUp
+
+opponentQ3                        Intermediate Levels                   MoveLeft
+
+opponentQ4                        Intermediate Levels                   MoveRight
+
+teamQ1                            Intermediate Levels                   MoveDown
+
+teamQ2                            Intermediate Levels                   Steal
+
+teamQ3                            Intermediate Levels                   Block
+
+teamQ4                            Intermediate Levels                   Wait
+
+
+Instead of Q1 - Q4 the field would be divided into about 20 sectors
+
+Passing and shooting might be overarching commands with seperate weights determining the vector of the action
+
+Instead of (is there an opponent in Q1?) for an input neuron, nuerons could take distances between 0-1 (distance from opponent?. In this setup nodes would be placed on the grid points
+the map and would only be non zero if an opponent was closer to them than the length of one node. ie if an opponent was on the node, its value would be 1. If an opponent was directly an 
+adjacient node, its value would be 0
+
+Another neuron type could be more complex object neurons that keep track of each team member and opponent, storing the position, direction, and some booleans like hasBall about each player
+on the field to give the network a better understanding of its surroundings.
+
+^^Goal of this experiment is not to overload the network with knowledge. Should be given less info than an actual soccer player, to see if (with the limited info) it can make superior 
+reasoning and come up with its own strategies.
+
+Potentially a team chemisty factor, a given teammate is more likely to pass to a certain other teammate under certain conditions
+
+Maybe ai should factor in direction, speed, momentum of each player and or the ball.
+
+^^UPDATE: Could start with MoveUp, ShootDown, PassRight, but should use float vectors to direct commands in the end: Shoot {0.365, 0.687}, Move {1, 0} <- unit vector
