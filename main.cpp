@@ -3,14 +3,14 @@
 #include <math.h>
 #include <string>
 
-const int MAP_HEIGHT = 10;           //The height of the map -- map.length
-const int MAP_WIDTH = 20;            //The width of the map -- map[0].length
-const int MAP_TERRITORY_SIZE = 40;   //The max number of healthy spaces that can randomly spawn
-const int CURE_DIFFICULTY = 100;     //Higher CURE_DIFFICULTY decreases the chances that HEALTHY Territories will cure INFECTED Territories
+const int MAP_HEIGHT = 10;            //The height of the map -- map.length
+const int MAP_WIDTH = 20;             //The width of the map -- map[0].length
+const int MAP_TERRITORY_SIZE = 40;    //The max number of healthy spaces that can randomly spawn
+const int CURE_DIFFICULTY = 100;      //Higher CURE_DIFFICULTY decreases the chances that HEALTHY Territories will cure INFECTED Territories
 const int INFECTION_DIFFICULTY = 100; //Higher INFECTION_DIFFICULTY decreases the chances that INFECTED Territories will infect HEALTHY Territories
-const int REVIVAL_DIFFICULTY = 200;  //Higher REVIVAL_DIFFICULTY decreases the chances that a DEAD or EMPTY Territory will become a HEALTHY Territory
-const int INITIAL_CURE = 5;          // The inital value of the cure
-const int INITIAL_INFECTION = 5;     // The initial value of the infection
+const int REVIVAL_DIFFICULTY = 200;   //Higher REVIVAL_DIFFICULTY decreases the chances that a DEAD or EMPTY Territory will become a HEALTHY Territory
+const int INITIAL_CURE = 5;           // The inital value of the cure
+const int INITIAL_INFECTION = 5;      // The initial value of the infection
 
 enum Territory //Each space of the map is a Territory enum representing its status
 {
@@ -312,9 +312,9 @@ bool loop(Territory **map, int *cure, int *infection)
 int main()
 {
     bool gameOver = false;
-    Territory **map = new Territory *[MAP_HEIGHT];
-    int cure = INITIAL_CURE;
-    int infection = INITIAL_INFECTION;
+    Territory **map = new Territory *[MAP_HEIGHT]; //game map
+    int cure = INITIAL_CURE;                       //the percent cure
+    int infection = INITIAL_INFECTION;             //the percent infection
     for (int i = 0; i < MAP_HEIGHT; i++)
     {
         map[i] = new Territory[MAP_WIDTH];
