@@ -9,7 +9,7 @@
       "command": "g++",
       "args": [
         "-g",
-        "${workspaceFolder}\\*.cpp"
+        "${workspaceFolder}\\*.cpp",
       ],
       "group": {
         "kind": "build",
